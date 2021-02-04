@@ -1,11 +1,14 @@
-import { useCreateSource } from '../../model/DataSources/commands';
+import { useUpdateSource } from '../../model/DataSources/commands';
 import { useDataSourceContext } from '../../model/providers';
-import { useEditDataSource } from './useEditDataSource';
 import { INITIAL_STATE } from './constants';
-import { packHandler } from './helpers';
+import { unpackHandler, packHandler } from './helpers';
+import { useEditDataSource } from './useEditDataSource';
 
-export const useAddDataSource = (limit: number) => {
+export const useUpdateDataSource = (limit: number) => {
   const { source = {}, clearSource } = useDataSourceContext();
+  const { state: initialState, key } = source || {};
+  const { id } = initialState || {};
+
   const {
     state,
     step,
@@ -13,19 +16,22 @@ export const useAddDataSource = (limit: number) => {
     updateState,
     completeStep,
     setStep,
-  } = useEditDataSource(limit, INITIAL_STATE);
-
+  } = useEditDataSource(
+    limit,
+    unpackHandler(initialState || INITIAL_STATE, key || '')
+  );
   const onCompleted = () => clearSource();
 
   // @TODO probably I need to show error message
   const onError = console.error;
 
   // Send new source to the server
-  const { createSource } = useCreateSource({ onCompleted, onError });
+  const { updateSource } = useUpdateSource({ onCompleted, onError });
 
   const onSubmit = () => {
-    createSource({
+    updateSource({
       variables: {
+        id,
         source: packHandler(state, source.key),
       },
     });
@@ -37,13 +43,13 @@ export const useAddDataSource = (limit: number) => {
     step,
     state,
     updateState,
-    isDisabled: !completed[0] || !completed[1],
+    isDisabled: false,
     completed,
     completeStep,
     setStep,
     text: {
-      title: 'Configure a data-source',
-      button: 'Add data-source',
+      title: 'Edit a data-source',
+      button: 'Update data-source',
     },
   };
 };
