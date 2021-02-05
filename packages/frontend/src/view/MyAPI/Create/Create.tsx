@@ -11,12 +11,22 @@ import {
 } from '../../../ui';
 import { useFormErrors } from '../../../model/Hooks';
 import { useCreateApiDef } from '../../../model/ApiDefs/commands';
+import { useHistory } from 'react-router-dom';
+import { ROUTES, useToast } from '../../../model/providers';
+import { ApolloError } from '@apollo/client';
 
 export const CreateApi: React.FC = () => {
   const { handleSubmit, control, errors } = useForm();
-  const { createApiDef } = useCreateApiDef();
+  const { showErrorToast } = useToast();
+  const { createApiDef } = useCreateApiDef({
+    onCompleted: () => push(ROUTES.APIS),
+    onError: (error: ApolloError) => {
+      showErrorToast(error.message);
+    },
+  });
+  const { push } = useHistory();
+
   const onSubmit = (data: any) => {
-    console.log(data);
     createApiDef({
       variables: {
         apiDef: {

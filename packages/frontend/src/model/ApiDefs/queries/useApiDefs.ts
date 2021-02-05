@@ -15,11 +15,13 @@ export const QUERY_API_DEFS = gql`
 `;
 
 export const useApiDefs = () => {
-  const { data, loading, error } = useQuery(QUERY_API_DEFS);
+  const { data, loading, error } = useQuery(QUERY_API_DEFS, {
+    fetchPolicy: 'network-only',
+  });
 
   return {
     data: data?.getApiDefs?.apiDefs || [],
     loading,
     error,
   };
-}
+};

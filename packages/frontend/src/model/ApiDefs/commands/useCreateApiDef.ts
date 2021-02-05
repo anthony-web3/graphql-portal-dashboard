@@ -10,10 +10,10 @@ const CREATE_API_DEF = gql`
 `;
 
 export const useCreateApiDef = (options?: any) => {
-  const [createApiDef, { error, loading }] = useMutation(
+  const [createApiDef, { error, loading, data }] = useMutation(
     CREATE_API_DEF,
     options || {}
   );
 
-  return { createApiDef, error, loading };
+  return { createApiDef, error, loading, data };
 };
